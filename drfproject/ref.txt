@@ -1,0 +1,7 @@
+celery -A drfproject.celery worker --pool=solo -l info
+celery -A drfproject beat -l INFO
+pip install django-celery-beat
+pip install redis 
+pip install django-celery-results
+rabbitmq-plugins enable rabbitmq_management
+pip install celery
