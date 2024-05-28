@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'drf',
     'rest_framework',
     'rest_framework.authtoken',
-    'django_filters'
+    'django_filters',
+    'django_celery_results',
+    'django_celery_beat'
 ]
 
 MIDDLEWARE = [
@@ -148,3 +150,26 @@ MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'mediafiles')
 
 # URL used to access the media
 MEDIA_URL = '/media/'
+
+
+CELERY_BROKER_URL='redis://127.0.0.1:6379'
+CELERY_ACCEPT_CONTENT =['application/json']
+CELERY_RESULT_SERIALIZER='json'
+CELERY_TASK_SERIALIZER= 'json'
+CELERY_TIMEZONE ='Asia/kolkata'
+
+CELERY_RESULT_BACKEND = 'django-db'
+
+CELERY_BEAT_SCHEDULER='django_celery_beat.schedulers:DatabaseScheduler'
+
+########SMTP
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_TLS = True
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER ='ishwarya.ideaux@gmail.com'
+EMAIL_HOST_PASSWORD = "vlnpujsghblbdjxn"
+DEFAULT_FROM_EMAIL = 'Celery <ishwarya.ideaux@gmail.com>'
+
+

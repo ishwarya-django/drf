@@ -13,8 +13,11 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication,BasicAuthentication,TokenAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
-
-  
+import vonage
+client = vonage.Client(key="77a4ddd4", secret="I9kjOb1EKRmLO3N4")
+sms = vonage.Sms(client)
+import xlwt
+from django.http import HttpResponse
 
 
 @api_view(['GET','POST'])
@@ -111,3 +114,93 @@ class Singer_view(viewsets.ModelViewSet):
 class Song_view(viewsets.ModelViewSet):
     queryset=Song.objects.all()
     serializer_class= SongSerializer
+
+
+@api_view(['GET','POST'])
+def add_product(request):
+    if request.method == 'GET':
+        transformer = Product.objects.all()
+       
+        serializer = ProductSerializer(transformer, many=True)
+        return Response(serializer.data)
+  
+    elif request.method == 'POST':
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,
+                            status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+@api_view(['GET','POST'])
+def xml_upload(request):
+    if request.method == "GET":
+        response = HttpResponse(content_type='application/ms-excel')
+
+        #decide file name
+        response['Content-Disposition'] = 'attachment; filename="All Complaints Report.xls"'
+
+        #creating workbook
+        wb = xlwt.Workbook(encoding='utf-8')
+
+        #adding sheet
+        ws = wb.add_sheet("sheet1")
+
+        # Sheet header, first row
+        row_num = 0
+
+        font_style = xlwt.XFStyle()
+        # headers are bold
+        font_style.font.bold = True
+        #column header names, you can use your own headers here
+        columns = ['Id','Name','Gender']
+
+        #write column headers in sheet
+        for col_num in range(len(columns)):
+            ws.write(row_num, col_num, columns[col_num], font_style)
+        
+        data = Singer.objects.filter().order_by('-id')
+        print(data)
+        
+        # data1 = Leads.objects.filter(lead_source='Youtube').order_by('-date')
+        default_updated_staff = 'None'
+        for my_row in data:
+            row_num = row_num + 1
+            ws.write(row_num, 0, row_num, font_style)
+            ws.write(row_num, 1, my_row.name, font_style)
+            ws.write(row_num, 2, my_row.gender, font_style)
+        print(ws)
+        wb.save(response) 
+        print(wb)
+        print(response)
+        return response
+    
+
+from .task import test_func
+from .task import send_mail_func
+import json
+
+# @api_view(['GET','POST'])
+def test(request):
+    # if request.method == "GET":
+
+        test_func.delay()
+
+        return HttpResponse("Done")
+
+
+def send_mail_to_all(request):
+    send_mail_func.delay()
+    return HttpResponse("Sent")
+
+from django_celery_beat.models import PeriodicTask, CrontabSchedule
+
+def schedule_mail(request):
+    schedule, created= CrontabSchedule.objects.get_or_create(hour=16, minute=48)
+    print("new_updateeeeeee")
+    task= PeriodicTask.objects.create(crontab=schedule,name="schedule_mail_task_"+"1",task='drf.task.send_mail_func',args=json.dumps(([2,3])))
+    return HttpResponse("Done")
+     

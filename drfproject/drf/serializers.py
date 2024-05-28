@@ -12,7 +12,7 @@ class TransformerSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Product
-        fields =  ['id','product','cost','url']
+        fields =  ['id','product','cost','mobile_number']
 
         
 class SongSerializer(serializers.ModelSerializer):
@@ -24,4 +24,4 @@ class SingerSerializer(serializers.ModelSerializer):
     sung_by=SongSerializer(many=True,read_only=True)
     class Meta:
         model = Singer
-        fields =['id','name','gender','sung_by']
+        fields =['id','name','gender','data','sung_by']
