@@ -6,7 +6,7 @@ def upload_to(instance, filename):
 
   
 class Transformer(models.Model):
-    name = models.CharField(max_length=150, unique=True)
+    name = models.CharField(max_length=150, unique=False)
     alternate_mode = models.CharField(
         max_length=250,
         blank=True,
@@ -27,6 +27,8 @@ class Product(models.Model):
     product=models.CharField(max_length=30)
     cost = models.IntegerField()
     mobile_number= models.CharField(max_length=255, null=True, blank= True)
+    image=models.ImageField(upload_to=upload_to, blank=True, null=True)
+
     def __str__(self):
         return self.product
 

@@ -22,6 +22,12 @@ urlpatterns = [
     path('',views.test,name='test'),
     path('sendmail/', views.send_mail_to_all, name="sendmail"),
     path('schedule_mail/', views.schedule_mail, name="schedule_mail"),
+    path('excel_data_save/', views.excel_data_save, name="excel_data_save"),
+    path('excel_data_view/', views.excel_data_view, name="excel_data_view"),
+
+    # path('excel_image_save/', views.excel_image_save, name="excel_image_save"),
+    
+
 
 
 
